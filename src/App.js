@@ -2,16 +2,18 @@ import React from 'react';
 import './App.css';
 import Nav from './Components /Nav/Nav';
 import routes from './routes';
-import Auth from './Components /Auth/Auth'
+import { withRouter } from 'react-router';
 
-function App() {
+function App(props) {
+  console.log(props)
   return (
     <div className="App">
-      <Nav>
-      </Nav>  
-      <Auth/>
+      {props.location.pathname === '/'
+      ? (<>{routes}</>)
+      : (<> <Nav />{routes}</>)
+      } 
     </div>
   );
 }
 
-export default App;
+export default withRouter(App);

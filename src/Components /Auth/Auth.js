@@ -1,50 +1,68 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import { connect } from 'react-redux'
+import { userUpdate } from './../../ducks/reducer'
 
-export default class Auth extends Component {
+class Auth extends Component {
     constructor() {
         super()
         this.state = {
             username: '',
             password: ''
         }
+        this.loginUser = this.loginUser.bind(this)
+        this.registerUser = this.registerUser.bind(this)
     }
 
-    handleUserNameInput(value) {
-        this.setState({ username: value })
+    handleChange(name, value) { 
+        this.setState({ [name]: value })
     }
 
-    handlePasswordInput(value) {
-        this.setState({ password: value})
+    loginUser() {
+        axios 
+            .post('/api/auth/login', this.state)
+            .then(res => {
+                this.props.userUpdate(res.data)
+                this.props.history.push('/dashboard')
+            })
     }
 
-    // login() {
-    //     const {username, password} = this.state
-    //     axios 
-    //         .post('')
-    // }
-
-    register() {
-        const {username, password} = this.state
+    registerUser() {
         axios
-            .post('/api/auth/register', {username, password})
-            .then(user => {
-                this.setState({ username: '', password: ''})
+            .post('/api/auth/register', this.state)
+            .then(res => {
+                this.props.userUpdate(res.data)
+                this.props.history.push('/dashboard')
             })
     }
 
     render() {
-        const {username, password} = this.state
+        console.log(this.props)
         return (
-            <div className='Auth'>
-                <div className='title'>Helo</div>
-                    <div className='loginContainer'>
-                        <input type='text' value={username} onChange={e => this.handleUsernameInput(e.target.value)}/>
-                        <input type='text' value={password} onChange={e => this.handlePasswordInput(e.target.value)}/>
-                        <button onClick={this.login}>Log In</button> 
-                        <button onClick={this.register}>Register</button>
+            <div className='display-container'>
+                <div className='box-medium'>
+                    <h1>Helo</h1>
+                    <div className='input-row'>
+                        <label className='input-title'>
+                            Username:{' '}
+                        </label>
+                        <input type='text' value={this.state.username} onChange={e => this.handleChange('username', e.target.value)} />
+                        <label className='input-title'>
+                            Password:{' '}
+                        </label>
+                        <input type='password' value={this.state.password} onChange={e => this.handleChange('password', e.target.value)}/>
+                        <br/>
+                        <button onClick={this.loginUser}>Log In</button> 
+                        <button onClick={this.registerUser}>Register</button>
                     </div>
+                </div>
             </div>
         )
     }
 }
+
+const mapStateToProps = (state) => {
+    return state
+}
+
+export default connect(mapStateToProps, {userUpdate})(Auth);
